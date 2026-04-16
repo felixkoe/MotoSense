@@ -18,7 +18,7 @@ MotoSense/
 │   │   ├── api/        # Endpunkte / Routen
 │   │   └── models/     # Datenmodelle
 │   └── database/       # Datenbankschema und Migrationen
-├── WebApp/             # Lokale Web-App (Echtzeit-Dashboard & Fahrtanalyse)
+├── App/             # Lokale Web-App (Echtzeit-Dashboard & Fahrtanalyse)
 │   ├── src/
 │   │   ├── components/ # UI-Komponenten
 │   │   └── pages/      # Seiten (Dashboard, Fahrthistorie, ...)
@@ -36,6 +36,6 @@ MotoSense/
 |---|---|
 | Sensorik | ESP32 (C/C++, Arduino/PlatformIO) |
 | Zentraleinheit | Raspberry Pi |
-| Datenbank | SQLite / InfluxDB (tbd) |
-| Web-App | tbd |
-| Kommunikation | WLAN (ESP32 → Raspberry Pi) |
+| Datenbank |  |
+| App |  |
+| Kommunikation | Mqtt |
