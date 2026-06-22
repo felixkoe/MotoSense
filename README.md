@@ -1,41 +1,29 @@
 # MotoSense
 
-Nachrüstbares System zur Erfassung und Anzeige von Motorraddaten für ältere Motorräder.
+Nachrüstbares Telemetrie-System für ältere Motorräder ohne Bordelektronik. Sensoren erfassen Öltemperatur, Drehzahl, Schräglage und GPS-Position – ein ESP32 verarbeitet die Daten und sendet sie per MQTT an einen Raspberry Pi. Über eine lokale Web-App lassen sich Fahrdaten in Echtzeit abrufen und vergangene Fahrten analysieren.
 
-Sensoren am Fahrzeug (Öltemperatur, Drehzahl, Schräglage, GPS) werden über ESP32-Mikrocontroller erfasst und drahtlos an einen Raspberry Pi übertragen. Eine lokale Web-App ermöglicht ein Echtzeit-Dashboard sowie die Analyse vergangener Fahrten.
+Entwickelt und getestet an einer Suzuki Bandit 1200 (GV77A, Bj. 2002).
 
-## Projektstruktur
+## Umsetzung
 
-```
-MotoSense/
-├── Docs/               # Projektdokumentation (Berichte, PDFs)
-├── Firmware/           # ESP32-Firmware (C/C++ / Arduino / PlatformIO)
-│   ├── src/            # Quellcode
-│   ├── include/        # Header-Dateien
-│   └── lib/            # Externe Bibliotheken
-├── RaspberryPi/        # Software für den Raspberry Pi
-│   ├── backend/        # Server-Anwendung (API, Datenverarbeitung)
-│   │   ├── api/        # Endpunkte / Routen
-│   │   └── models/     # Datenmodelle
-│   └── database/       # Datenbankschema und Migrationen
-├── App/             # Lokale Web-App (Echtzeit-Dashboard & Fahrtanalyse)
-│   ├── src/
-│   │   ├── components/ # UI-Komponenten
-│   │   └── pages/      # Seiten (Dashboard, Fahrthistorie, ...)
-│   └── public/         # Statische Assets
-└── Hardware/           # Hardware-Unterlagen
-    ├── Electronics/    # Schaltpläne, PCB-Layouts
-    └── Mechanics/      # Mechanische Konstruktion
-        ├── CAD/        # CAD-Modelle
-        └── 3D-Print/   # STL-Dateien für den 3D-Druck
-```
+Der ESP32 liest alle Sensoren aus und publiziert alle 100 ms ein JSON-Paket auf dem MQTT-Topic `motosense/data`. Der Raspberry Pi läuft als WLAN-Access-Point, empfängt die Daten über Mosquitto und stellt sie über ein Python/Dash-Dashboard bereit. Fahrtdaten werden in einer SQLite-Datenbank gespeichert.
 
 ## Technologiestack
 
-| Bereich | Technologie |
-|---|---|
-| Sensorik | ESP32 (C/C++, Arduino/PlatformIO) |
-| Zentraleinheit | Raspberry Pi |
-| Datenbank |  |
-| App |  |
-| Kommunikation | Mqtt |
+| Bereich        | Technologie                         |
+| -------------- | ----------------------------------- |
+| Sensorik       | ESP32 (C/C++, Arduino / PlatformIO) |
+| Kommunikation  | MQTT (Mosquitto)                    |
+| Zentraleinheit | Raspberry Pi 4 (WLAN Access Point)  |
+| Backend        | Python, paho-mqtt                   |
+| Dashboard      | Plotly Dash, Dash Leaflet           |
+| Datenbank      | SQLite                              |
+
+## Sensoren
+
+| Sensor                             | Messgröße                     | Schnittstelle    |
+| ---------------------------------- | ----------------------------- | ---------------- |
+| NEO-6M                             | GPS-Position, Geschwindigkeit | UART2            |
+| MPU-6050                           | Schräglage, Neigung           | I2C              |
+| MAX31865 + PT100                   | Öltemperatur                  | SPI              |
+| Induktiver Pickup + 74HC14 + PC817 | Drehzahl                      | GPIO (Interrupt) |
